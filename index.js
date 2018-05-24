@@ -11,13 +11,29 @@ module.exports = (mongoose, opts = {}) => {
             expires: opts.expiry || LOCK_EXPIRY,
             required: true,
             type: Date
+        },
+        tag: {
+            index: true,
+            required: true,
+            type: String,
+            unique: true
         }
     });
 
     const LockModel = mongoose.model('HubbaLock', LockSchema);
 
+    let initialised = false;
+
     const lock = async (tag) => {
-        const newLock = await LockModel.create({}); // TODO: tag
+        if (!initialised) {
+            await LockModel.ensureIndexes();
+
+            initialised = true;
+        }
+
+        const newLock = new LockModel({ tag });
+
+        await newLock.save();
 
         return {
             unlock: () => LockModel.remove({ _id: newLock._id })
