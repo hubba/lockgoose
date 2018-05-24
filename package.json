@@ -1,19 +1,26 @@
 {
-    "name": "hubba-locks",
-    "version": "1.0.0",
+    "name": "lock-goose",
+    "version": "0.1.0",
     "description": "Simple locking in mongo",
     "main": "index.js",
     "scripts": {
+        "lint": "eslint .",
         "test": "jest --runInBand"
     },
-    "keywords": [],
+    "keywords": [
+        "locking",
+        "mongo",
+        "mongoose"
+    ],
     "author": "Hubba",
-    "license": "ISC",
+    "license": "MIT",
     "peerDependencies": {
-        "mongoose": "~5.1.2"
+        "mongoose": "^5.1.2"
     },
     "dependencies": {},
     "devDependencies": {
+        "@hubba/eslint-config-hubba": "^0.2.0",
+        "eslint": "^4.19.1",
         "jest": "^22.4.4",
         "mongodb-memory-server": "^1.7.4",
         "mongoose": "^5.1.2"

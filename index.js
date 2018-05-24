@@ -1,9 +1,16 @@
+/**
+ * LockGoose! A mongoose locking library
+ *
+ * @param {object} mongoose An instance of mongoose
+ * @param {object} opts Options { expiry: 60, modelName: 'GooseLock' }
+ */
 module.exports = (mongoose, opts = {}) => {
     if (!mongoose || !mongoose.Schema || !mongoose.model) {
         throw new Error('an instance of mongoose must be passed when requiring the library');
     }
 
     const LOCK_EXPIRY = 60;
+    const MODEL_NAME = 'GooseLock';
 
     const LockSchema = new mongoose.Schema({
         createdAt: {
@@ -20,10 +27,18 @@ module.exports = (mongoose, opts = {}) => {
         }
     });
 
-    const LockModel = mongoose.model('HubbaLock', LockSchema);
+    const LockModel = mongoose.model(opts.modelName || MODEL_NAME, LockSchema);
 
     let initialised = false;
 
+    /**
+     * Creates a new lock
+     *
+     * @param {string} tag An identifier for the lock
+     * @returns {object} A lock with unlock() method
+     *
+     * @throws {Error} If a tag is not provided or is not a string
+     */
     const lock = async (tag) => {
         if (!tag || typeof tag !== 'string') {
             throw new Error('a tag must be provided to identify the lock');
@@ -44,6 +59,14 @@ module.exports = (mongoose, opts = {}) => {
         };
     };
 
+    /**
+     * Unlock a lock matching the given tag
+     *
+     * @param {string} tag Lock identifier
+     * @returns {Promise} Resolves to result of document removal
+     *
+     * @throws {Error} If a tag is not provided or is not a string
+     */
     const unlock = (tag) => {
         if (!tag || typeof tag !== 'string') {
             throw new Error('a tag must be provided to identify the lock');

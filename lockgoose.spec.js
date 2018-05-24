@@ -1,6 +1,6 @@
 const MongoDBMemoryServer = require('mongodb-memory-server');
 const mongoose = require('mongoose');
-const Locks = require('../index')(mongoose);
+const LockGoose = require('./index')(mongoose);
 
 // set long timeout so that mongo binary can download
 jest.setTimeout(30000);
@@ -15,16 +15,16 @@ beforeAll(async () => {
 
 describe('hubba-locks test suite', () => {
     beforeEach(async () => {
-        await mongoose.model('HubbaLock').remove();
+        await mongoose.model('GooseLock').remove();
     });
 
     describe('lock()', () => {
         it('creates a new lock', async () => {
-            const lock = await Locks.lock('testlock');
+            const lock = await LockGoose.lock('testlock');
 
             expect(lock.unlock).toEqual(expect.any(Function));
 
-            const lockDocs = await mongoose.model('HubbaLock').find();
+            const lockDocs = await mongoose.model('GooseLock').find();
             const currentDate = new Date();
 
             expect(lockDocs.length).toEqual(1);
@@ -37,8 +37,8 @@ describe('hubba-locks test suite', () => {
             expect.assertions(3);
 
             try {
-                await Locks.lock('testlock');
-                await Locks.lock('testlock');
+                await LockGoose.lock('testlock');
+                await LockGoose.lock('testlock');
             } catch (err) {
                 expect(err).toBeDefined();
                 expect(err.name).toEqual('MongoError');
@@ -48,7 +48,7 @@ describe('hubba-locks test suite', () => {
 
         it('throws an error if no tag is passed', async () => {
             try {
-                await Locks.unlock();
+                await LockGoose.unlock();
             } catch (err) {
                 expect(err).toBeDefined();
                 expect(err.message).toEqual('a tag must be provided to identify the lock');
@@ -58,22 +58,22 @@ describe('hubba-locks test suite', () => {
 
     describe('unlock()', () => {
         it('unlocks a previously created lock', async () => {
-            const lock = await Locks.lock('testlock');
+            await LockGoose.lock('testlock');
 
-            expect(await mongoose.model('HubbaLock').count()).toBe(1);
+            expect(await mongoose.model('GooseLock').count()).toBe(1);
 
-            await Locks.unlock('testlock');
+            await LockGoose.unlock('testlock');
 
-            expect(await mongoose.model('HubbaLock').count()).toBe(0);
+            expect(await mongoose.model('GooseLock').count()).toBe(0);
         });
 
         it('has no effect if no lock is found with the given tag', async () => {
-            await Locks.unlock('testlock');
+            await LockGoose.unlock('testlock');
         });
 
         it('throws an error if no tag is passed', async () => {
             try {
-                await Locks.unlock();
+                await LockGoose.unlock();
             } catch (err) {
                 expect(err).toBeDefined();
                 expect(err.message).toEqual('a tag must be provided to identify the lock');
@@ -83,20 +83,20 @@ describe('hubba-locks test suite', () => {
 
     describe('lock.unlock()', () => {
         it('unlocks a lock which exists in scope', async () => {
-            const lock = await Locks.lock('testlock');
+            const lock = await LockGoose.lock('testlock');
 
             await lock.unlock();
 
-            expect(await mongoose.model('HubbaLock').count()).toBe(0);
+            expect(await mongoose.model('GooseLock').count()).toBe(0);
         });
 
         it('has no effect when no lock is found with the given tag', async () => {
-            const lock = await Locks.lock('testlock');
+            const lock = await LockGoose.lock('testlock');
 
             await lock.unlock();
             await lock.unlock();
 
-            expect(await mongoose.model('HubbaLock').count()).toBe(0);
+            expect(await mongoose.model('GooseLock').count()).toBe(0);
         });
     });
 });

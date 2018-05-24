@@ -1,0 +1,13 @@
+{
+    "extends": ["eslint:recommended", "@hubba/eslint-config-hubba"],
+    "env": {
+        "jest": true,
+        "node": true,
+        "es6": true
+    },
+    "root": true,
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    }
+}
