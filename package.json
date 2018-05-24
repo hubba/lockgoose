@@ -1,5 +1,5 @@
 {
-    "name": "lock-goose",
+    "name": "lockgoose",
     "version": "0.1.0",
     "description": "Simple locking in mongo",
     "main": "index.js",

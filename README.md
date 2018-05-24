@@ -1,4 +1,4 @@
-# simple-mongo-locks
+# lockgoose
 
 ## Install
 
@@ -10,18 +10,18 @@ npm i lockgoose
 
 ```javascript
 const mongoose = require('mongoose');
-const LockGoose = require('lockgoose')(mongoose);
+const lockgoose = require('lockgoose')(mongoose);
 
 // (initialise your mongoose connection here)
 
 // create a lock
-const lock = await LockGoose.lock('tag');
+const lock = await lockgoose.lock('tag');
 
 // unlock a lock in-scope
 await lock.unlock();
 
 // unlock a lock created earlier
-await LockGoose.unlock('tag');
+await lockgoose.unlock('tag');
 ```
 
 ### Test

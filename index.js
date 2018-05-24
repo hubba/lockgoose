@@ -1,5 +1,5 @@
 /**
- * LockGoose! A mongoose locking library
+ * lockgoose! A mongoose locking library
  *
  * @param {object} mongoose An instance of mongoose
  * @param {object} opts Options { expiry: 60, modelName: 'GooseLock' }
