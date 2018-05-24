@@ -1,12 +1,21 @@
 {
-  "name": "hubba-locks",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "name": "hubba-locks",
+    "version": "1.0.0",
+    "description": "Simple locking in mongo",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest --runInBand"
+    },
+    "keywords": [],
+    "author": "Hubba",
+    "license": "ISC",
+    "peerDependencies": {
+        "mongoose": "~5.1.2"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "jest": "^22.4.4",
+        "mongodb-memory-server": "^1.7.4",
+        "mongoose": "^5.1.2"
+    }
 }
