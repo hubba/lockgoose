@@ -25,6 +25,10 @@ module.exports = (mongoose, opts = {}) => {
     let initialised = false;
 
     const lock = async (tag) => {
+        if (!tag || typeof tag !== 'string') {
+            throw new Error('a tag must be provided to identify the lock');
+        }
+
         if (!initialised) {
             await LockModel.ensureIndexes();
 
@@ -40,7 +44,16 @@ module.exports = (mongoose, opts = {}) => {
         };
     };
 
+    const unlock = (tag) => {
+        if (!tag || typeof tag !== 'string') {
+            throw new Error('a tag must be provided to identify the lock');
+        }
+
+        return LockModel.remove({ tag });
+    };
+
     return {
-        lock
+        lock,
+        unlock
     };
 };
