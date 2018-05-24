@@ -25,6 +25,8 @@ module.exports = (mongoose, opts = {}) => {
             type: String,
             unique: true
         }
+    }, {
+        read: 'linearizable'
     });
 
     const LockModel = mongoose.model(opts.modelName || MODEL_NAME, LockSchema);
