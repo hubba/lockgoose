@@ -1,5 +1,5 @@
 {
-    "extends": ["eslint:recommended", "@hubba/eslint-config-hubba"],
+    "extends": ["eslint:recommended"],
     "env": {
         "jest": true,
         "node": true,
