@@ -24,6 +24,10 @@ describe('lockgoose test suite', () => {
 
     it('can be re-required without failing', () => {
         require('./index')();
+
+        delete require.cache[require.resolve('./index.js')];
+
+        require('./index')();
     });
 
     describe('lock()', () => {
