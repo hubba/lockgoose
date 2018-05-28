@@ -15,6 +15,8 @@ beforeAll(async () => {
 
 describe('lockgoose test suite', () => {
     beforeEach(async () => {
+        jest.clearAllMocks();
+
         await mongoose.model('GooseLock').remove();
     });
 
@@ -53,6 +55,28 @@ describe('lockgoose test suite', () => {
                 expect(err).toBeDefined();
                 expect(err.name).toEqual('LockgooseError');
                 expect(err.message).toEqual('a tag must be provided to identify the lock');
+            }
+        });
+
+        it('handles BulkWriteErrors from older mongoose versions', async () => {
+            expect.assertions(3);
+
+            jest.spyOn(mongoose.Model.prototype, 'save')
+            .mockImplementationOnce(() => {
+                const err = new Error();
+
+                err.name = 'BulkWriteError';
+                err.code = 11000;
+
+                throw err;
+            });
+
+            try {
+                await lockgoose.lock('testlock');
+            } catch (err) {
+                expect(err).toBeDefined();
+                expect(err.name).toEqual('LockgooseError');
+                expect(err.message).toBe('a lock already exists for this tag');
             }
         });
     });
