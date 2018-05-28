@@ -12,9 +12,22 @@ module.exports = (opts = {}) => {
     const lockExpiry = opts.expiry || 60;
     const modelName = opts.modelName || 'GooseLock';
 
-    const LockModel = mongoose.model(modelName, LockSchema(lockExpiry));
-
+    let LockModel;
     let initialised = false;
+
+    /**
+     * Initialises the model and ensures indexes
+     * Useful when connection is reset (e.g. during testing)
+     *
+     * @returns {Promise} Resolves when indexes are ensured
+     */
+    const init = async () => {
+        if (!LockModel) {
+            LockModel = mongoose.model(modelName, LockSchema(lockExpiry));
+        }
+
+        return LockModel.ensureIndexes();
+    }
 
     /**
      * Creates a new lock
@@ -30,9 +43,7 @@ module.exports = (opts = {}) => {
         }
 
         if (!initialised) {
-            await LockModel.ensureIndexes();
-
-            initialised = true;
+            await init();
         }
 
         const newLock = new LockModel({ tag });
@@ -69,6 +80,7 @@ module.exports = (opts = {}) => {
     };
 
     return {
+        init,
         lock,
         unlock
     };

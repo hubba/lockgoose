@@ -25,6 +25,9 @@ await lock.unlock();
 
 // unlock a lock created earlier
 await lockgoose.unlock('tag');
+
+// reinit index on locks (useful if you are dropping database during testing)
+await lockgoose.init();
 ```
 
 ## Test

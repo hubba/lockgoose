@@ -17,7 +17,13 @@ describe('lockgoose test suite', () => {
     beforeEach(async () => {
         jest.clearAllMocks();
 
-        await mongoose.model('GooseLock').remove();
+        await mongoose.connection.db.dropDatabase();
+
+        return lockgoose.init();
+    });
+
+    it('can be re-required without failing', () => {
+        require('./index')();
     });
 
     describe('lock()', () => {
