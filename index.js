@@ -71,9 +71,13 @@ module.exports = (opts = {}) => {
      *
      * @throws {Error} If a tag is not provided or is not a string
      */
-    const unlock = (tag) => {
+    const unlock = async (tag) => {
         if (!tag || typeof tag !== 'string') {
             throw new LockgooseError('a tag must be provided to identify the lock');
+        }
+
+        if (!initialised) {
+            await init();
         }
 
         return LockModel.remove({ tag });
