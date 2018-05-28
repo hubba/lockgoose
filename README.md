@@ -6,11 +6,12 @@
 npm i lockgoose
 ```
 
+Requires [http://mongoosejs.com/](mongoose) to be installed as a dependency.
+
 ## Usage
 
 ```javascript
-const mongoose = require('mongoose');
-const lockgoose = require('lockgoose')(mongoose);
+const lockgoose = require('lockgoose')({ /* options */ });
 
 // (initialise your mongoose connection here)
 

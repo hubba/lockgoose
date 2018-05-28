@@ -1,35 +1,18 @@
+const mongoose = require('mongoose');
+const LockgooseError = require('./lib/lockgoose.error');
+const LockSchema = require('./lib/lock.schema');
+
 /**
  * lockgoose! A mongoose locking library
  *
  * @param {object} mongoose An instance of mongoose
- * @param {object} opts Options { expiry: 60, modelName: 'GooseLock' }
+ * @param {object} opts Options { expiry: 60 (seconds), modelName: 'GooseLock' }
  */
-module.exports = (mongoose, opts = {}) => {
-    if (!mongoose || !mongoose.Schema || !mongoose.model) {
-        throw new Error('an instance of mongoose must be passed when requiring the library');
-    }
+module.exports = (opts = {}) => {
+    const lockExpiry = opts.expiry || 60;
+    const modelName = opts.modelName || 'GooseLock';
 
-    const LOCK_EXPIRY = 60;
-    const MODEL_NAME = 'GooseLock';
-
-    const LockSchema = new mongoose.Schema({
-        createdAt: {
-            default: Date.now,
-            expires: opts.expiry || LOCK_EXPIRY,
-            required: true,
-            type: Date
-        },
-        tag: {
-            index: true,
-            required: true,
-            type: String,
-            unique: true
-        }
-    }, {
-        read: 'linearizable'
-    });
-
-    const LockModel = mongoose.model(opts.modelName || MODEL_NAME, LockSchema);
+    const LockModel = mongoose.model(modelName, LockSchema(lockExpiry));
 
     let initialised = false;
 
@@ -43,7 +26,7 @@ module.exports = (mongoose, opts = {}) => {
      */
     const lock = async (tag) => {
         if (!tag || typeof tag !== 'string') {
-            throw new Error('a tag must be provided to identify the lock');
+            throw new LockgooseError('a tag must be provided to identify the lock');
         }
 
         if (!initialised) {
@@ -54,7 +37,15 @@ module.exports = (mongoose, opts = {}) => {
 
         const newLock = new LockModel({ tag });
 
-        await newLock.save();
+        try {
+            await newLock.save();
+        } catch (err) {
+            if (err.name === 'MongoError' && err.code === 11000) {
+                throw new LockgooseError('a lock already exists for this tag');
+            }
+
+            throw err;
+        }
 
         return {
             unlock: () => LockModel.remove({ _id: newLock._id })
@@ -71,7 +62,7 @@ module.exports = (mongoose, opts = {}) => {
      */
     const unlock = (tag) => {
         if (!tag || typeof tag !== 'string') {
-            throw new Error('a tag must be provided to identify the lock');
+            throw new LockgooseError('a tag must be provided to identify the lock');
         }
 
         return LockModel.remove({ tag });

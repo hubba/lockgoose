@@ -1,6 +1,6 @@
 const MongoDBMemoryServer = require('mongodb-memory-server');
 const mongoose = require('mongoose');
-const lockgoose = require('./index')(mongoose);
+const lockgoose = require('./index')();
 
 // set long timeout so that mongo binary can download
 jest.setTimeout(30000);
@@ -41,8 +41,8 @@ describe('lockgoose test suite', () => {
                 await lockgoose.lock('testlock');
             } catch (err) {
                 expect(err).toBeDefined();
-                expect(err.name).toEqual('MongoError');
-                expect(err.code).toBe(11000);
+                expect(err.name).toEqual('LockgooseError');
+                expect(err.message).toBe('a lock already exists for this tag');
             }
         });
 
@@ -51,6 +51,7 @@ describe('lockgoose test suite', () => {
                 await lockgoose.unlock();
             } catch (err) {
                 expect(err).toBeDefined();
+                expect(err.name).toEqual('LockgooseError');
                 expect(err.message).toEqual('a tag must be provided to identify the lock');
             }
         });
@@ -76,6 +77,7 @@ describe('lockgoose test suite', () => {
                 await lockgoose.unlock();
             } catch (err) {
                 expect(err).toBeDefined();
+                expect(err.name).toEqual('LockgooseError');
                 expect(err.message).toEqual('a tag must be provided to identify the lock');
             }
         });
