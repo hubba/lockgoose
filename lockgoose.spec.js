@@ -1,6 +1,6 @@
 const MongoDBMemoryServer = require('mongodb-memory-server');
 const mongoose = require('mongoose');
-const lockgoose = require('./index')();
+const lockgoose = require('./index');
 
 // set long timeout so that mongo binary can download
 jest.setTimeout(30000);
@@ -23,11 +23,11 @@ describe('lockgoose test suite', () => {
     });
 
     it('can be re-required without failing', () => {
-        require('./index')();
+        require('./index');
 
         delete require.cache[require.resolve('./index.js')];
 
-        require('./index')();
+        require('./index');
     });
 
     describe('lock()', () => {
