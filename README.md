@@ -6,7 +6,7 @@
 npm i lockgoose
 ```
 
-Requires [http://mongoosejs.com/](mongoose) to be installed as a dependency.
+Requires [mongoose](http://mongoosejs.com/) to be installed as a dependency.
 
 ## Usage
 
@@ -25,7 +25,7 @@ await lock.unlock();
 await lockgoose.unlock('tag');
 ```
 
-### Test
+## Test
 
 ```javascript
 npm test
