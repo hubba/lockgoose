@@ -8,7 +8,7 @@ A simple library for creating locks with mongoose.
 npm i lockgoose
 ```
 
-Requires [mongoose](http://mongoosejs.com/) to be installed as a dependency.
+Requires [mongoose](http://mongoosejs.com/) `^5.0.0` to be installed as a dependency.
 
 ## Usage
 
