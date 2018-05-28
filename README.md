@@ -13,9 +13,12 @@ Requires [mongoose](http://mongoosejs.com/) `^5.0.0` to be installed as a depend
 ## Usage
 
 ```javascript
-const lockgoose = require('lockgoose')({ /* options */ });
+const lockgoose = require('lockgoose');
 
 // (initialise your mongoose connection here)
+
+// initialise lockgoose
+await lockgoose.init({ /* options */ });
 
 // create a lock
 const lock = await lockgoose.lock('tag');
@@ -25,6 +28,9 @@ await lock.unlock();
 
 // unlock a lock created earlier
 await lockgoose.unlock('tag');
+
+// reinit index on locks (useful if you are dropping database during testing)
+await lockgoose.init();
 ```
 
 ## Test

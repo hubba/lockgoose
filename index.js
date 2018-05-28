@@ -4,17 +4,31 @@ const LockSchema = require('./lib/lock.schema');
 
 /**
  * lockgoose! A mongoose locking library
- *
- * @param {object} mongoose An instance of mongoose
- * @param {object} opts Options { expiry: 60 (seconds), modelName: 'GooseLock' }
  */
-module.exports = (opts = {}) => {
-    const lockExpiry = opts.expiry || 60;
-    const modelName = opts.modelName || 'GooseLock';
+class Lockgoose {
+    constructor() {
+        this.initialised = false;
+        this.lockExpiry = 60;
+        this.modelName = 'GooseLock';
+    }
 
-    const LockModel = mongoose.model(modelName, LockSchema(lockExpiry));
+    /**
+     * Initialises the model and ensures indexes
+     * Useful when connection is reset (e.g. during testing)
+     *
+     * @param {object} opts Options { expiry: 60 (seconds), modelName: 'GooseLock' }
+     * @returns {Promise} Resolves when indexes are ensured
+     */
+    async init(opts = {}) {
+        if (!this.LockModel) {
+            this.LockModel = mongoose.model(
+                opts.modelName || this.modelName,
+                LockSchema(opts.expiry || this.lockExpiry)
+            );
+        }
 
-    let initialised = false;
+        return this.LockModel.ensureIndexes();
+    }
 
     /**
      * Creates a new lock
@@ -24,18 +38,16 @@ module.exports = (opts = {}) => {
      *
      * @throws {Error} If a tag is not provided or is not a string
      */
-    const lock = async (tag) => {
+    async lock(tag) {
         if (!tag || typeof tag !== 'string') {
             throw new LockgooseError('a tag must be provided to identify the lock');
         }
 
-        if (!initialised) {
-            await LockModel.ensureIndexes();
-
-            initialised = true;
+        if (!this.initialised) {
+            await this.init();
         }
 
-        const newLock = new LockModel({ tag });
+        const newLock = new this.LockModel({ tag });
 
         try {
             await newLock.save();
@@ -48,9 +60,9 @@ module.exports = (opts = {}) => {
         }
 
         return {
-            unlock: () => LockModel.remove({ _id: newLock._id })
+            unlock: () => this.LockModel.remove({ _id: newLock._id })
         };
-    };
+    }
 
     /**
      * Unlock a lock matching the given tag
@@ -60,16 +72,17 @@ module.exports = (opts = {}) => {
      *
      * @throws {Error} If a tag is not provided or is not a string
      */
-    const unlock = (tag) => {
+    async unlock(tag) {
         if (!tag || typeof tag !== 'string') {
             throw new LockgooseError('a tag must be provided to identify the lock');
         }
 
-        return LockModel.remove({ tag });
-    };
+        if (!this.initialised) {
+            await this.init();
+        }
 
-    return {
-        lock,
-        unlock
-    };
-};
+        return this.LockModel.remove({ tag });
+    }
+}
+
+module.exports = new Lockgoose();
