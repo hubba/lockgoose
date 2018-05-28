@@ -40,7 +40,7 @@ module.exports = (opts = {}) => {
         try {
             await newLock.save();
         } catch (err) {
-            if (err.name === 'MongoError' && err.code === 11000) {
+            if ((err.name === 'MongoError' || err.name === 'BulkWriteError') && err.code === 11000) {
                 throw new LockgooseError('a lock already exists for this tag');
             }
 
