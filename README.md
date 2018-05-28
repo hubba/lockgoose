@@ -1,5 +1,7 @@
 # lockgoose
 
+A simple library for creating locks with mongoose.
+
 ## Install
 
 ```bash
@@ -26,6 +28,8 @@ await lockgoose.unlock('tag');
 ```
 
 ## Test
+
+Testing provided by [Jest](https://facebook.github.io/jest/) and linting by [eslint](https://eslint.org/).
 
 ```javascript
 npm test
