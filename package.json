@@ -1,6 +1,6 @@
 {
     "name": "lockgoose",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "description": "Simple locking in mongo",
     "main": "index.js",
     "scripts": {
@@ -15,7 +15,7 @@
     "author": "Hubba",
     "license": "MIT",
     "peerDependencies": {
-        "mongoose": "^5.0.0"
+        "mongoose": "^5.1.2"
     },
     "dependencies": {},
     "devDependencies": {
